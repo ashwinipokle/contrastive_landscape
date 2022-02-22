@@ -1,0 +1,15 @@
+nn: 3000 # TODO: number of training data
+num_exp: 1 # TODO: number of repeats
+NUM_EPOCHES: 5000
+batch_size: 512
+p: 20
+d: 20
+m: 20
+lr: 0.025
+has_online_ReLU: True
+has_target_ReLU: True
+has_target_predictor: False
+alternative_optimization: True
+rm_predictor: True
+sigma0: 0
+one_hot_latent: True

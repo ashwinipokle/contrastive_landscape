@@ -1,0 +1,19 @@
+# some wandb specific experiment category
+
+# Specify the broad type of experiment - e.g. augmentation_study
+# Note: Keep this consistent for a specific category experiments
+# exp_group: 'init-run-byol'
+nn: 5000 # TODO: number of training data
+num_exp: 10 # TODO: number of repeats
+NUM_EPOCHES: 500
+batch_size: 500
+p: 50
+d: 10
+m: 10
+lr: 0.0001
+has_online_ReLU: True
+has_target_ReLU: True
+has_target_predictor: False
+alternative_optimization: True
+rm_predictor: True
+sigma0: None
