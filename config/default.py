@@ -9,8 +9,8 @@ import os
 from yacs.config import CfgNode as CN
 
 _C = CN()
-_C.nn = 10000 # TODO: number of training data
-_C.num_exp = 5 # TODO: number of repeats
+_C.nn = 10000 # number of training data
+_C.num_exp = 5 # number of repeats
 _C.NUM_EPOCHES = 100
 _C.batch_size = 1000
 _C.p = 50
@@ -27,6 +27,10 @@ _C.threshold = 0 #Used in sparse coding model by Arora et.al.
 _C.z_dim = None  # Only dimensions 0~z_dim can be non-zero in z
 _C.one_hot_latent = False  # If true, there is exactly one +/-1 in z, all others are 0
 _C.batch_norm = None  # None, 'encoder_pre_activation', or 'encoder_out'
+_C.ws_noise_levels = (None,)
+_C.gaussian_noise_levels = (None,)
+_C.sparsity_levels = (0.1, 0.2, 0.3)
+_C.masking_probs = (0.25, 0.5, 0.75, 0.9)
 
 def update_config(cfg, args):
     cfg.defrost()

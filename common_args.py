@@ -37,14 +37,14 @@ def parse_args():
                         help='The decay parameter for exponential moving average update',
                         type=float,
                         default=None)
-    parser.add_argument('--use_masking',
-                        help='Whether to use masked data loader for randomized masking of inputs',
-                        type=str2bool,
-                        default=False)
     parser.add_argument('--use_multimasking',
                         help='Whether to use masked data loader for randomized masking of inputs',
                         type=str2bool,
                         default=False)
+    parser.add_argument('--n_aug',
+                        help='Number of augmentations per input if using multimasking',
+                        type=int,
+                        default=5)
     parser.add_argument('--use_bn',
                         help='Whether to use batch norm in simplified model',
                         type=str2bool,
@@ -97,6 +97,11 @@ def parse_args():
                     help="The value of biases of encoder, if constant",
                     type=float,
                     default=0.005
+                    )
+    parser.add_argument('--wandb_project',
+                    help="Name of project for purposes of wandb logging",
+                    type=str,
+                    default="experiment-log"
                     )
     args = parser.parse_args()
     update_config(config, args)

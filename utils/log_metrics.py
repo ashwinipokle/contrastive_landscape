@@ -105,6 +105,7 @@ def log_all_metrics(model, M, z, loss, logger, vals_to_log={}, log_weights=False
     for k, v in vals_to_log.items():
         val_dict[k] = v
     logger(val_dict)
+    return val_dict
 
 def check_support(model, M, z):
     with torch.no_grad():

@@ -123,10 +123,8 @@ def train(model, optimizer, train_loader, max_epochs, M , log_metrics=False, log
                 elif row_norm:
                     with torch.no_grad():
                         model.Wp.weight.data = (model.Wp.weight.data.T / model.Wp.weight.data.norm(dim=1)).T
-
-
-        print(f"Epoch {epoch_counter} Loss {loss}")
-
+        
+        print(f"Epoch {epoch_counter} Loss {loss.item()}")
         if log_metrics:
             log_weights = False
             if epoch_counter % 50 == 0:
@@ -134,6 +132,7 @@ def train(model, optimizer, train_loader, max_epochs, M , log_metrics=False, log
             log_all_metrics(model, M, z, loss, logger, log_weights=log_weights)
 
     final_vals = check_sparse_coding_learning(model, M)
+    print(f"Epoch {epoch_counter} Loss {loss} min_cosine {final_vals[2]}")
     return {"model": model,
             "loss": loss,
             "init_metric": init_vals,

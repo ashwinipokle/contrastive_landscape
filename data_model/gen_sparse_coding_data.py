@@ -1,14 +1,14 @@
 import numpy as np
 import pickle
 
-def gen_z_random(n,d,prob=None):
+def gen_z_random(n, d, prob=None):
     if prob is None:
         prob = np.log(np.log(d))/d
     else:
         prob = (np.log(np.log(d))/d)**prob  
     return np.random.choice([0,-1,1], (d, n), p=[1-prob, prob/2, prob/2]) 
 
-def gen_z(n,d,prob=None, one_hot_latent=False):
+def gen_z(n, d, prob=None, one_hot_latent=False):
     z = np.zeros(d)
     if one_hot_latent:
         (num_neg_ones, num_ones) = np.random.permutation([0, 1])
@@ -26,7 +26,7 @@ def gen_z(n,d,prob=None, one_hot_latent=False):
     print(f"Sparsity {len(np.where(z == 0)[0])} Total entries {z.shape[0]}")
     return np.array([np.random.permutation(z) for i in range(n)]).T
 
-def gen_z_one_hot(n,d,prob=None):
+def gen_z_one_hot(n, d, prob=None):
     z = np.zeros((n, d))
     ridx = np.arange(n)
     cidx = np.random.choice(np.arange(d), n)
@@ -35,7 +35,7 @@ def gen_z_one_hot(n,d,prob=None):
     return z.T
 
 # ensure that atleast 1 entry is non zero in every column
-def gen_z_k_sparse(n,d,prob=None):
+def gen_z_k_sparse(n, d, prob=None):
     z = np.random.choice([0,1], (d, n), p=[1-prob, prob]) 
     for c in range(d):
         if sum(z[c]) == 0:
@@ -44,7 +44,7 @@ def gen_z_k_sparse(n,d,prob=None):
     print(f"Sparsity {len(np.where(z == 0)[0])} Total entries {z.shape[0]}")
     return z
 
-def gen_M(p,d):
+def gen_M(p, d):
     """
     Generate a column orthonormal matrix of shape (p, d)
     """
@@ -70,7 +70,7 @@ def kaiming_weight_init(input, output, fanmode='fan_in'):
     b = np.sqrt(3)/np.sqrt(dim)
     return np.random.uniform(-b,b,(input, output))
 
-def gen_Winit(M,p,m,d,c=None):
+def gen_Winit(M, p, m, d, c=None):
     """
     Generate initialization of W0 based on M
     """
@@ -85,7 +85,7 @@ def gen_Winit(M,p,m,d,c=None):
     else: # equals M
         return MS    
 
-def gen_epsilon(n,p,d, sigma0=None):
+def gen_epsilon(n, p, d, sigma0=None):
     if sigma0 is None:
         sigma0 = np.sqrt(np.log(d))/d # default, following yuanzhi
         return np.random.normal(0, sigma0, (p, n))

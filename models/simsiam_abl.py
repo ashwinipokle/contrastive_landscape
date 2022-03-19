@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from model_utils import *
+from models.model_utils import *
 
 class SimSiamAblationModel(nn.Module):
     def __init__(self, Wo_init, m, p, d,

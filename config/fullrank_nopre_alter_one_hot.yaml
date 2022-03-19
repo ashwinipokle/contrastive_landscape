@@ -11,4 +11,6 @@ has_target_ReLU: True
 alternative_optimization: True
 rm_predictor: True
 sigma0: 0
-one_hot_latent: False
+one_hot_latent: True
+ws_noise: (None,)
+masking_probs: (0.5)
