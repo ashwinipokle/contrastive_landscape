@@ -97,7 +97,7 @@ def main():
                     if args.use_multimasking:
                         dataset = MultiMaskedSparseContrastiveDataset(data=X, Z=Z.T, prob_ones=1-maskprob, n_aug=n_aug)
                         train_loader = DataLoader(dataset, batch_size=config.batch_size, shuffle=True, drop_last=True, collate_fn=multi_mask_data_collate)
-                    elif args.masking:
+                    elif args.use_masking:
                         dataset = MaskedSparseContrastiveDataset(data=X, Z=Z.T, prob_ones=1-maskprob)
                         train_loader = DataLoader(dataset, batch_size=config.batch_size, shuffle=True, drop_last=True)
                     else:

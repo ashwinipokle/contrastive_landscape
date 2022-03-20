@@ -1,5 +1,5 @@
-nn: 3000 # TODO: number of training data
-num_exp: 5 # TODO: number of repeats
+nn: 3000 
+num_exp: 5
 NUM_EPOCHES: 8000
 batch_size: 512
 p: 50
