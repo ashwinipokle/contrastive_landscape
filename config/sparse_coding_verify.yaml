@@ -1,9 +1,0 @@
-nn: 5000 # TODO: number of training data
-NUM_EPOCHES: 100
-batch_size: 500
-p: 50
-d: 10
-m: 50
-lr: 0.0001
-threshold: 0
-sigma0: 1e-3

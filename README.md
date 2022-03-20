@@ -9,7 +9,7 @@ Python >= 3.6 and PyTorch >= 1.7.
 To install requirements:
 
 ``
-$ pip install -r requirements.txt
+$ conda create --name <env> --file requirements.txt
 ``
 
 ### Training
