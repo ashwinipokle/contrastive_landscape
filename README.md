@@ -1,4 +1,4 @@
-This repository contains the code for all the experiments in 'Contrasting the landscape of contrastive and non-contrastive learning'. This code has been developed colaboratively by Jinjin Tian, Yuchen Li and Ashwini Pokle. 
+This repository contains the code for all the experiments in 'Contrasting the landscape of contrastive and non-contrastive learning'. This code has been developed collaboratively by Jinjin Tian, Yuchen Li and Ashwini Pokle. 
 
 ## Getting Started
 
