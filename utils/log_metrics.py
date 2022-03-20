@@ -85,7 +85,7 @@ def log_all_metrics(model, M, z, loss, logger, vals_to_log={}, log_weights=False
             if "pred" in model.name:
                 sigma_p = np.linalg.svd(model.Wp.weight.cpu().numpy(), compute_uv=False)
                 val_dict["Wp_largest_singular_val"] = np.max(sigma_p)
-                val_dict["Wp_smallest_singular_val"] = np.max(sigma_p)
+                val_dict["Wp_smallest_singular_val"] = np.min(sigma_p)
                 val_dict["Wp_condition number"] = val_dict["Wp_largest_singular_val"] / val_dict["Wp_smallest_singular_val"]
 
             if log_weights:
@@ -112,6 +112,7 @@ def check_support(model, M, z):
         Wo = model.Wo.weight.cpu().detach().numpy()
         pred_rep = model.predicted_rep.cpu().detach().numpy().T
         z = z.cpu().numpy().T
+        
     m = model.m
     d = model.d
     assert z.shape[0] == d, "Z has incorrect shape"
@@ -124,7 +125,7 @@ def check_support(model, M, z):
     neuronord = []
     # sort the neuron-latents pair by their cosine value (decreasing ordering)
     sorted_ind = np.array(np.unravel_index(np.argsort(-Wo_dot_M, axis=None), Wo_dot_M.shape))
-    #print(sorted_ind)
+
     j = 0
     while j < d: 
         neuronnow = sorted_ind[0,0]

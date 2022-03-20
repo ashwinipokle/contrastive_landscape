@@ -35,7 +35,6 @@ class SparseContrastiveModel(nn.Module):
             self.bno = nn.BatchNorm1d(m)
             self.bnt = nn.BatchNorm1d(m)
 
-        print(self.Wo.weight.shape)
         if has_online_ReLU and has_target_ReLU:
             self.srelu = SymReLU()
 
