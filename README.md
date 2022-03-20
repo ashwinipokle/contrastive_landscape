@@ -31,7 +31,7 @@ If you find this work useful for your research, please consider citing out work:
 
 ```
 @inproceedings{,
-  author    = {Ashwini Pokle and Jinjin Tian and Yuchen Li and Andrej Riskteski},
+  author    = {Ashwini Pokle and Jinjin Tian and Yuchen Li and Andrej Risteski},
   title     = {Contrasting the landscape of contrastive and non=contrastive learning},
   booktitle = {International Conference on Artificial Intelligence and Statistics},
   year      = {2022},

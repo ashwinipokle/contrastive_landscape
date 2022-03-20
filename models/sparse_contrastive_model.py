@@ -46,7 +46,11 @@ class SparseContrastiveModel(nn.Module):
         self.device = device
 
         self.normalize_rep = normalize_rep
-        self.name = "simplified-pred"
+        if self.use_pred:
+            self.name = 'simplified-pred'
+        else:
+            self.name = "simplified"
+
 
     def init_weights(self, Wo_init, Wt_init):
         if self.Wo.weight.shape == Wo_init.T.shape:
@@ -98,15 +102,17 @@ class SparseContrastiveModel(nn.Module):
             
         if optimize_online:
             if self.use_pred:
-                loss = torch.sum((po - zt.detach())**2, dim=-1).mean()
-                #loss = 2 - 2 * (po * zt.detach()).sum(dim=1).mean()
+                #loss = torch.sum((po - zt.detach())**2, dim=-1).mean()
+                # This loss is used in theoretical analysis of training dynamics
+                loss = 2 - 2 * (po * zt.detach()).sum(dim=1).mean()
             else:
                 loss = torch.sum((zo - zt.detach())**2, dim=-1).mean()
 
         else:
             if self.use_pred:
-                loss = torch.sum((zo.detach() - pt)**2, dim=-1).mean()
-                #loss = 2 - 2 * (zo.detach() * pt).sum(dim=1).mean()
+                #loss = torch.sum((zo.detach() - pt)**2, dim=-1).mean()
+                # This loss is used in theoretical analysis of training dynamics
+                loss = 2 - 2 * (zo.detach() * pt).sum(dim=1).mean()
             else:
                 loss = torch.sum((zo.detach() - zt)**2, dim=-1).mean()
 

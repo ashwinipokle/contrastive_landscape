@@ -12,4 +12,4 @@ alternative_optimization: False
 rm_predictor: False
 sigma0: None
 one_hot_latent: True
-ws_noise_levels: (1, 1.25, 1.5, 2, 3,) 
+ws_noise_levels: (1, 1.25, 1.5, 2,) 

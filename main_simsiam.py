@@ -66,10 +66,10 @@ def main():
     if not args.const_bias:
         bias_val = "trained"
 
-    for ws_noise in [1, 1.25, 1.5, 2, 3]: 
-        for sigma0 in [None]:
-            for sparsity in [0.1, 0.2, 0.3]: # proportion of non-zeros
-                for maskprob in [0.25, 0.5, 0.75, 0.9]:
+    for ws_noise in config.ws_noise_levels:
+        for sigma0 in config.gaussian_noise_levels:
+            for sparsity in config.sparsity_levels: # proportion of non-zeros
+                for maskprob in config.masking_probs:
                     for i in range(config.num_exp):
                         print(f"Experiment {i+1}")
                         
@@ -78,7 +78,7 @@ def main():
 
                         # pnb == pred no bias
                         if log_metrics:
-                            run = wandb.init(project="camready-experiments", reinit=True, name=f"trial-{i}",
+                            run = wandb.init(project=args.wandb_project, reinit=True, name=f"trial-{i}",
                                                     group=f"{args.model}-cn-{args.use_alt_norm}-rn-{args.use_row_norm}-I{args.m_identity}-" + 
                                                     f"bn-{args.use_bn}-norm-{args.normalize_repr}-p{config.p}-m{config.m}-d{config.d}-c{ws_noise}-bias-{bias_val}-" +
                                                     f"sp-{sparsity}-mask{maskprob}-lr-{config.lr}-1h-{config.one_hot_latent}",

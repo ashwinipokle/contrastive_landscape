@@ -97,6 +97,10 @@ def parse_args():
                     help="should the bias of encoder be a constant",
                     action='store_true'
                     )
+    parser.add_argument('--clip_bias',
+                    help="Should we clip bias?",
+                    action='store_true'
+                    )
     parser.add_argument('--bias_val',
                     help="The value of biases of encoder, if constant",
                     type=float,

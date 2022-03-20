@@ -12,3 +12,5 @@ alternative_optimization: True
 rm_predictor: True
 sigma0: 0
 one_hot_latent: False
+ws_noise_levels: (1.25, )
+masking_probs: (0.5,)

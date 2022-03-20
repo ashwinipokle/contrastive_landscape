@@ -71,7 +71,7 @@ def main():
     if not args.const_bias:
         bias_val = "trained"
 
-    for ws_noise in config.ws_noise_levels: #[1, 1.25, 1.5, 2, 3]: 
+    for ws_noise in config.ws_noise_levels: #[1, 1.25, 1.5, 2]: 
         for sigma0 in config.gaussian_noise_levels:
             for sparsity in config.sparsity_levels:
                 for maskprob in config.masking_probs:
@@ -134,8 +134,8 @@ def main():
 
                             model = model.to(device)
 
-                            online_optimizer = torch.optim.SGD(list(model.Wo.parameters()), lr=config.lr)
-                            target_optimizer = torch.optim.SGD(list(model.Wt.parameters()), lr=config.lr)
+                            online_optimizer = torch.optim.SGD(list(model.parameters()), lr=config.lr)
+                            target_optimizer = torch.optim.SGD(list(model.parameters()), lr=config.lr)
 
                             assert not args.use_alt_norm == True or not args.use_row_norm == True, "we cannot normalize both rows and cols"
 
@@ -151,9 +151,7 @@ def main():
                                             target_scheduler=target_scheduler,
                                             col_norm=args.use_alt_norm,
                                             row_norm=args.use_row_norm,
-                                            clip_bias=False,
-                                            clip_bias_maxval=1./np.sqrt(20),
-                                            clip_bias_minval=-1./np.sqrt(20)
+                                            clip_bias=args.clip_bias
                                             )
 
                         elif args.model == 'simplified-pred':
@@ -175,8 +173,11 @@ def main():
 
                             model = model.to(device)
 
-                            online_optimizer = torch.optim.SGD(list(model.Wo.parameters()), lr=config.lr)
-                            target_optimizer = torch.optim.SGD(list(model.Wt.parameters()), lr=config.lr)
+                            online_optimizer = torch.optim.SGD(list(model.parameters()), lr=config.lr)
+                            target_optimizer = torch.optim.SGD(list(model.parameters()), lr=config.lr)
+
+                            # online_optimizer = torch.optim.SGD(list(model.Wo.parameters()) + list(model.Wp.parameters()), lr=config.lr)
+                            # target_optimizer = torch.optim.SGD(list(model.Wt.parameters()) + list(model.Wp.parameters()), lr=config.lr)
 
                             val_dict = alternate_train(model, online_optimizer=online_optimizer,
                                             target_optimizer=target_optimizer,
@@ -211,8 +212,8 @@ def main():
 
                             model = model.to(device)
 
-                            online_optimizer = torch.optim.SGD(list(model.Wo.parameters()), lr=config.lr)
-                            target_optimizer = torch.optim.SGD(list(model.Wt.parameters()), lr=config.lr)
+                            online_optimizer = torch.optim.SGD(list(model.parameters()), lr=config.lr)
+                            target_optimizer = torch.optim.SGD(list(model.parameters()), lr=config.lr)
 
                             val_dict = alternate_train(model, online_optimizer=online_optimizer,
                                             target_optimizer=target_optimizer,
@@ -284,8 +285,11 @@ def main():
 
                             model = model.to(device)
 
-                            online_optimizer = torch.optim.SGD(list(model.Wo.parameters()), lr=config.lr)
-                            target_optimizer = torch.optim.SGD(list(model.Wt.parameters()), lr=config.lr)
+                            online_optimizer = torch.optim.SGD(list(model.parameters()), lr=config.lr)
+                            target_optimizer = torch.optim.SGD(list(model.parameters()), lr=config.lr)
+
+                            # online_optimizer = torch.optim.SGD(list(model.Wo.parameters()), lr=config.lr)
+                            # target_optimizer = torch.optim.SGD(list(model.Wt.parameters()), lr=config.lr)
 
                             val_dict = alternate_train(model, online_optimizer=online_optimizer,
                                             target_optimizer=target_optimizer,
