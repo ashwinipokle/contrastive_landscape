@@ -134,8 +134,8 @@ def main():
 
                             model = model.to(device)
 
-                            online_optimizer = torch.optim.SGD(list(model.Wo.parameters()), lr=config.lr)
-                            target_optimizer = torch.optim.SGD(list(model.Wt.parameters()), lr=config.lr)
+                            online_optimizer = torch.optim.SGD(list(model.parameters()), lr=config.lr)
+                            target_optimizer = torch.optim.SGD(list(model.parameters()), lr=config.lr)
 
                             assert not args.use_alt_norm == True or not args.use_row_norm == True, "we cannot normalize both rows and cols"
 
@@ -175,8 +175,11 @@ def main():
 
                             model = model.to(device)
 
-                            online_optimizer = torch.optim.SGD(list(model.Wo.parameters()), lr=config.lr)
-                            target_optimizer = torch.optim.SGD(list(model.Wt.parameters()), lr=config.lr)
+                            online_optimizer = torch.optim.SGD(list(model.parameters()), lr=config.lr)
+                            target_optimizer = torch.optim.SGD(list(model.parameters()), lr=config.lr)
+
+                            # online_optimizer = torch.optim.SGD(list(model.Wo.parameters()) + list(model.Wp.parameters()), lr=config.lr)
+                            # target_optimizer = torch.optim.SGD(list(model.Wt.parameters()) + list(model.Wp.parameters()), lr=config.lr)
 
                             val_dict = alternate_train(model, online_optimizer=online_optimizer,
                                             target_optimizer=target_optimizer,
@@ -284,8 +287,11 @@ def main():
 
                             model = model.to(device)
 
-                            online_optimizer = torch.optim.SGD(list(model.Wo.parameters()), lr=config.lr)
-                            target_optimizer = torch.optim.SGD(list(model.Wt.parameters()), lr=config.lr)
+                            online_optimizer = torch.optim.SGD(list(model.parameters()), lr=config.lr)
+                            target_optimizer = torch.optim.SGD(list(model.parameters()), lr=config.lr)
+
+                            # online_optimizer = torch.optim.SGD(list(model.Wo.parameters()), lr=config.lr)
+                            # target_optimizer = torch.optim.SGD(list(model.Wt.parameters()), lr=config.lr)
 
                             val_dict = alternate_train(model, online_optimizer=online_optimizer,
                                             target_optimizer=target_optimizer,

@@ -11,5 +11,6 @@ has_target_predictor: False
 alternative_optimization: False
 rm_predictor: False
 sigma0: None
-one_hot_latent: True
-ws_noise_levels: (1, 1.25, 1.5, 2, 3,) 
+one_hot_latent: False
+masking_probs: (0.5,)
+ws_noise_levels: (2, 1.5, 1.25, 1) 
