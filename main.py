@@ -1,3 +1,4 @@
+import pdb
 import torch
 from torch.utils.data import DataLoader
 
@@ -11,7 +12,7 @@ import pickle
 from common_args import parse_args
 
 from dataset.masked_sparse_contr_dataset import MaskedSparseContrastiveDataset
-from dataset.multimask_sparse_contr_dataset import MultiMaskedSparseContrastiveDataset
+from dataset.multimask_sparse_contr_dataset import MultiMaskedSparseContrastiveDataset, multi_mask_data_collate
 
 from models.sparse_contrastive_model import SparseContrastiveModel
 from models.sparse_contrastive_ml_model import SparseContrastiveMultiLayeredModel
@@ -26,17 +27,17 @@ from torch.optim.lr_scheduler import CosineAnnealingLR, StepLR
 def main():
     args = parse_args()
 
-    print('config.n ', config.nn)  # debug
-    print('config.p ', config.p)  # debug
-    print('config.d ', config.d)  # debug
-    print('config.m ', config.m)  # debug
-    print('config.has_target_predictor ', config.has_target_predictor)  # debug
-    print('config.has_target_ReLU ', config.has_target_ReLU)  # debug
-    print('config.lr ' , config.lr)  # debug
-    print('config.sigma0 ', config.sigma0)  # debug
+    print('config.n ', config.nn)  
+    print('config.p ', config.p) 
+    print('config.d ', config.d) 
+    print('config.m ', config.m)
+    print('config.has_target_predictor ', config.has_target_predictor)
+    print('config.has_target_ReLU ', config.has_target_ReLU)
+    print('config.lr ' , config.lr)
+    print('config.sigma0 ', config.sigma0)
     print('args.normalize_repr', args.normalize_repr)
     print('args.ema_decay', args.ema_decay)
-    print('args.use_masking', args.use_masking)
+    print('args.use_multimasking', args.use_multimasking)
     print('args.use_bn', args.use_bn)
     print('args.temperature', args.temperature)
     print('args.use_pred', args.use_pred)
@@ -59,18 +60,23 @@ def main():
     logger = None
 
     sigma0 = None
+
+    online_scheduler =  None 
+    target_scheduler = None
+
     # number of augmentations if multimask
-    n_aug = 5
+    n_aug = args.n_aug
 
     bias_val = args.bias_val
     if not args.const_bias:
         bias_val = "trained"
 
-    for ws_noise in [1, 1.25, 1.5, 2, 3]: 
-        for sigma0 in [None]:
-            for sparsity in [0.1, 0.2, 0.3]: # proportion of non-zeros
-                for maskprob in [0.25, 0.5, 0.75, 0.9]:
+    for ws_noise in config.ws_noise_levels: #[1, 1.25, 1.5, 2, 3]: 
+        for sigma0 in config.gaussian_noise_levels:
+            for sparsity in config.sparsity_levels:
+                for maskprob in config.masking_probs:
                     for i in range(config.num_exp):
+
                         print(f"Experiment {i+1}")
                         
                         np.random.seed(i+1)
@@ -78,8 +84,10 @@ def main():
 
                         # pnb == pred no bias
                         if log_metrics:
-                            run = wandb.init(project="camready-experiments", reinit=True, name=f"trial-{i}",
-                                                    group=f"{args.model}-cn-{args.use_alt_norm}-rn-{args.use_row_norm}-I{args.m_identity}-bn-{args.use_bn}-norm-{args.normalize_repr}-p{config.p}-m{config.m}-d{config.d}-c{ws_noise}-bias-{bias_val}-sp-{sparsity}-mask{maskprob}-lr-{config.lr}-1h-{config.one_hot_latent}",
+                            run = wandb.init(project=args.wandb_project, reinit=True, name=f"trial-{i}",
+                                                    group=f"{args.model}-cn-{args.use_alt_norm}-rn-{args.use_row_norm}-I{args.m_identity}-bn-{args.use_bn}-" +
+                                                    "norm-{args.normalize_repr}-p{config.p}-m{config.m}-d{config.d}-c{ws_noise}-bias-{bias_val}-sp-{sparsity}-" +
+                                                    "mask{maskprob}-lr-{config.lr}-1h-{config.one_hot_latent}",
                                                     config=config)
                             logger = wandb.log
 
@@ -129,9 +137,6 @@ def main():
                             online_optimizer = torch.optim.SGD(list(model.Wo.parameters()), lr=config.lr)
                             target_optimizer = torch.optim.SGD(list(model.Wt.parameters()), lr=config.lr)
 
-                            online_scheduler =  None 
-                            target_scheduler = None
-
                             assert not args.use_alt_norm == True or not args.use_row_norm == True, "we cannot normalize both rows and cols"
 
                             val_dict = alternate_train(model, online_optimizer=online_optimizer,
@@ -173,9 +178,6 @@ def main():
                             online_optimizer = torch.optim.SGD(list(model.Wo.parameters()), lr=config.lr)
                             target_optimizer = torch.optim.SGD(list(model.Wt.parameters()), lr=config.lr)
 
-                            online_scheduler =  None
-                            target_scheduler = None 
-
                             val_dict = alternate_train(model, online_optimizer=online_optimizer,
                                             target_optimizer=target_optimizer,
                                             train_loader=train_loader,
@@ -211,9 +213,6 @@ def main():
 
                             online_optimizer = torch.optim.SGD(list(model.Wo.parameters()), lr=config.lr)
                             target_optimizer = torch.optim.SGD(list(model.Wt.parameters()), lr=config.lr)
-
-                            online_scheduler =  None
-                            target_scheduler = None 
 
                             val_dict = alternate_train(model, online_optimizer=online_optimizer,
                                             target_optimizer=target_optimizer,
@@ -264,8 +263,8 @@ def main():
                                             )
 
                         elif args.model == 'simplified-ml':
-                            Wo1_init = gen_Winit(M, c=c, m=config.m, d=config.d, p=config.m)
-                            Wt1_init = gen_Winit(M, c=c, m=config.m, d=config.d, p=config.m)
+                            Wo1_init = gen_Winit(M, c=ws_noise, m=config.m, d=config.d, p=config.m)
+                            Wt1_init = gen_Winit(M, c=ws_noise, m=config.m, d=config.d, p=config.m)
 
                             print(f"Running {args.model}...")
                             # Initialize model
@@ -304,8 +303,9 @@ def main():
                         with open(root_output_dir.joinpath(f"training_val_dict_c{ws_noise}_noise{sigma0}_sparse{sparsity}_mask{maskprob}_ema{args.ema_decay}_experiment{i}.pkl"), 'wb') as f:
                             pickle.dump(val_dict, f)
 
-                        with open(root_output_dir.joinpath('model.pkl'), 'wb') as f:
-                            pickle.dump(model, f)
+                        torch.save({
+                            'model_state_dict': model.state_dict()
+                        }, root_output_dir.joinpath('final_model.pt'))
 
 if __name__ == '__main__':
     main()

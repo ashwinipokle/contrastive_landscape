@@ -36,7 +36,7 @@ def main():
     print('config.sigma0 ', config.sigma0)  # debug
     print('args.normalize_repr', args.normalize_repr)
     print('args.ema_decay', args.ema_decay)
-    print('args.use_masking', args.use_masking)
+    print('args.use_multimasking', args.use_multimasking)
     print('args.use_bn', args.use_bn)
     print('args.temperature', args.temperature)
     print('args.use_pred', args.use_pred)

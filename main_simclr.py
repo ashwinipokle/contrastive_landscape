@@ -4,7 +4,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 
 import numpy as np
-from data_model.gen_sparse_coding_data import gen_z, gen_M, gen_Winit, gen_epsilon
+from data_model.gen_sparse_coding_data import gen_z, gen_M, gen_Winit, gen_epsilon, gen_z_k_sparse, gen_z_one_hot
 
 from config import config
 from pathlib import Path
@@ -15,6 +15,7 @@ from common_args import parse_args
 from dataset.simple_contrastive_dataset import SimpleContrastiveDataset
 from dataset.masked_sparse_contr_dataset import MaskedSparseContrastiveDataset
 from dataset.multimask_sparse_contr_dataset import MultiMaskedSparseContrastiveDataset, multi_mask_data_collate
+from dataset.dep_mask_contrastive_dataset import DependentMaskContrastiveDataset
 
 from models.simclr import SimCLROrigModel, SimCLRModel
 from models.simclr_asym import SimCLRAsymmetricModel
@@ -36,6 +37,7 @@ def main():
     print('config.sigma0 ', config.sigma0)  # debug
     print('args.normalize_repr', args.normalize_repr)
     print('args.ema_decay', args.ema_decay)
+    print('args.use_masking', args.use_masking)
     print('args.use_multimasking', args.use_multimasking)
     print('args.use_bn', args.use_bn)
     print('args.temperature', args.temperature)
@@ -74,7 +76,7 @@ def main():
                     if log_metrics:
                         run = wandb.init(project=args.wandb_project, reinit=True, name=f"trial-{i}",
                                                 group=f"{args.model}-I{args.m_identity}-bn-{args.use_bn}-norm-{args.normalize_repr}-p{config.p}-m{config.m}-d{config.d}-sp-{sparsity}-" + 
-                                                    f"mask{maskprob}-lr-{config.lr}-1h-{config.one_hot_latent}",
+                                                    f"mask{maskprob}-lr-{config.lr}-1h-{config.one_hot_latent}-temperature-{args.temperature}",
                                                 config=config)
                         logger = wandb.log
 
@@ -84,7 +86,10 @@ def main():
                     else:
                         M = gen_M(p=config.p, d=config.d)
 
-                    Z = gen_z(n=config.nn, d=config.d, prob=sparsity, one_hot_latent=config.one_hot_latent)
+                    if config.one_hot_latent:
+                        Z = gen_z_one_hot(n=config.nn, d=config.d, prob=sparsity)
+                    else:
+                        Z = gen_z(n=config.nn, d=config.d, prob=sparsity, one_hot_latent=config.one_hot_latent)
 
                     Epsilon = gen_epsilon(n=config.nn, p=config.p, d=config.d, sigma0 = sigma0)
                     X = (M @ Z + Epsilon).T
@@ -92,8 +97,11 @@ def main():
                     if args.use_multimasking:
                         dataset = MultiMaskedSparseContrastiveDataset(data=X, Z=Z.T, prob_ones=1-maskprob, n_aug=n_aug)
                         train_loader = DataLoader(dataset, batch_size=config.batch_size, shuffle=True, drop_last=True, collate_fn=multi_mask_data_collate)
-                    else:
+                    elif args.masking:
                         dataset = MaskedSparseContrastiveDataset(data=X, Z=Z.T, prob_ones=1-maskprob)
+                        train_loader = DataLoader(dataset, batch_size=config.batch_size, shuffle=True, drop_last=True)
+                    else:
+                        dataset = DependentMaskContrastiveDataset(data=X, Z=Z.T)
                         train_loader = DataLoader(dataset, batch_size=config.batch_size, shuffle=True, drop_last=True)
 
                     Wo_init = gen_Winit(M, c=None, m=config.m, d=config.d, p=config.p)

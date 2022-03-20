@@ -1,5 +1,5 @@
 from torch.utils.data import Dataset
-
+import numpy as np
 class SimpleContrastiveDataset(Dataset):
     def __init__(self, data, Z, prob_ones=0.5):
         self.data = data

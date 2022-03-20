@@ -1,7 +1,7 @@
 import numpy as np
 from torch.utils.data import Dataset
 
-class SparseContrastiveDataset(Dataset):
+class DependentMaskContrastiveDataset(Dataset):
     def __init__(self, data, Z):
         self.data = data
         self.Z = Z

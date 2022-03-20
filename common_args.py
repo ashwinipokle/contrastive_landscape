@@ -37,6 +37,10 @@ def parse_args():
                         help='The decay parameter for exponential moving average update',
                         type=float,
                         default=None)
+    parser.add_argument('--use_masking',
+                        help='Whether to use masked data (independent masking)',
+                        type=str2bool,
+                        default=False)
     parser.add_argument('--use_multimasking',
                         help='Whether to use masked data loader for randomized masking of inputs',
                         type=str2bool,
