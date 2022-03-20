@@ -23,7 +23,7 @@ For more concrete examples, check script files provided in `scripts` directory, 
 
 Several hyperparameters have been included in the files in `config` directory. 
 
-Currenlty, by default, all the logging is done in [wandb](https://wandb.ai/site). 
+Currenlty, by default, all the logging is done in [wandb](https://wandb.ai/site). Include `--log_metrics` in the command while training the model.
 
 ### Bibtex
 
