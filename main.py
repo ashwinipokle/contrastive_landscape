@@ -86,8 +86,8 @@ def main():
                         if log_metrics:
                             run = wandb.init(project=args.wandb_project, reinit=True, name=f"trial-{i}",
                                                     group=f"{args.model}-cn-{args.use_alt_norm}-rn-{args.use_row_norm}-I{args.m_identity}-bn-{args.use_bn}-" +
-                                                    "norm-{args.normalize_repr}-p{config.p}-m{config.m}-d{config.d}-c{ws_noise}-bias-{bias_val}-sp-{sparsity}-" +
-                                                    "mask{maskprob}-lr-{config.lr}-1h-{config.one_hot_latent}",
+                                                    f"norm-{args.normalize_repr}-p{config.p}-m{config.m}-d{config.d}-c{ws_noise}-bias-{bias_val}-sp-{sparsity}-" +
+                                                    f"mask{maskprob}-lr-{config.lr}-1h-{config.one_hot_latent}",
                                                     config=config)
                             logger = wandb.log
 
