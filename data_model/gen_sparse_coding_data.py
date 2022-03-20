@@ -81,7 +81,7 @@ def gen_Winit(M, p, m, d, c=None):
     if c is None: # random
         return np.random.normal(0, np.sqrt(1/(p*d)), (p, m))
     elif c > 0: # close to M
-        return MS + np.random.normal(0, c, (p, m)) #np.random.normal(0, 1.0/p**(c/2), (p, m)) 
+        return MS + np.random.normal(0, 1.0/p**(c/2), (p, m)) #np.random.normal(0, c, (p, m)) #
     else: # equals M
         return MS    
 
